@@ -161,3 +161,24 @@ CREATE TABLE IF NOT EXISTS generation_stops (
 
 CREATE INDEX IF NOT EXISTS idx_generation_stops_status ON generation_stops(status);
 
+-- Tabela: reexecute_decisions
+-- Armazena decisões de não reexecutar o agente quando finish=true
+CREATE TABLE IF NOT EXISTS reexecute_decisions (
+    decision_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id TEXT NOT NULL,
+    generation_id TEXT NOT NULL,
+    finish BOOLEAN NOT NULL, -- true = tarefa concluída, false = precisa continuar
+    reason TEXT, -- Motivo da decisão quando finish=true (para auditoria)
+    followup_message TEXT, -- Mensagem de followup quando finish=false
+    prompt_text TEXT, -- Prompt inicial que foi avaliado
+    agent_response_summary TEXT, -- Resumo da resposta do agente avaliada
+    timestamp TEXT NOT NULL, -- Timestamp ISO 8601 da decisão
+    FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id) ON DELETE CASCADE,
+    FOREIGN KEY (generation_id) REFERENCES generations(generation_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_reexecute_decisions_conversation ON reexecute_decisions(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_reexecute_decisions_generation ON reexecute_decisions(generation_id);
+CREATE INDEX IF NOT EXISTS idx_reexecute_decisions_finish ON reexecute_decisions(finish);
+CREATE INDEX IF NOT EXISTS idx_reexecute_decisions_timestamp ON reexecute_decisions(timestamp);
+

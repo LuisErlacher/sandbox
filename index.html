@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meu Caozinho Lindo - Petshop completo com banho, tosa, consultas veterinárias e muito mais cuidado para seu pet">
+    <meta name="keywords" content="petshop, banho e tosa, veterinário, pet shop, hotel para pets">
+    <title>Meu Caozinho Lindo - Petshop Completo</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header com logo e navegação -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <!-- Logo placeholder - substituir por logo real quando disponível -->
+                    <div class="logo logo--placeholder" aria-hidden="true">🐾</div>
+                    <h1 class="logo__text">Meu Caozinho Lindo</h1>
+                </div>
+                <nav class="nav" aria-label="Navegação principal">
+                    <button class="nav__toggle" aria-label="Abrir menu" aria-expanded="false">
+                        <span class="nav__toggle-icon"></span>
+                        <span class="nav__toggle-icon"></span>
+                        <span class="nav__toggle-icon"></span>
+                    </button>
+                    <ul class="nav__menu">
+                        <li class="nav__item"><a href="#inicio" class="nav__link">Início</a></li>
+                        <li class="nav__item"><a href="#servicos" class="nav__link">Serviços</a></li>
+                        <li class="nav__item"><a href="#sobre" class="nav__link">Sobre</a></li>
+                        <li class="nav__item"><a href="#depoimentos" class="nav__link">Depoimentos</a></li>
+                        <li class="nav__item"><a href="#contato" class="nav__link">Contato</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero section com chamada principal e imagem -->
+    <section id="inicio" class="hero">
+        <div class="container">
+            <div class="hero__content">
+                <div class="hero__text">
+                    <h2 class="hero__title">Cuidado e Carinho para seu Melhor Amigo</h2>
+                    <p class="hero__subtitle">No Meu Caozinho Lindo, seu pet recebe o melhor tratamento com profissionais dedicados e instalações modernas.</p>
+                    <a href="#contato" class="btn btn--primary">Agende uma Visita</a>
+                </div>
+                <div class="hero__image">
+                    <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?w=1200&h=800&fit=crop" alt="Cachorro feliz recebendo carinho em petshop" class="hero__img" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de serviços oferecidos -->
+    <section id="servicos" class="services">
+        <div class="container">
+            <h2 class="section__title">Nossos Serviços</h2>
+            <p class="section__subtitle">Oferecemos uma gama completa de serviços para cuidar do seu pet</p>
+            <div class="services__grid">
+                <article class="service-card">
+                    <div class="service-card__icon">
+                        <img src="https://images.unsplash.com/photo-1517849845537-4d257902454a?w=300&h=300&fit=crop" alt="Ícone de banho e tosa" class="service-card__img" loading="lazy">
+                    </div>
+                    <h3 class="service-card__title">Banho e Tosa</h3>
+                    <p class="service-card__description">Banho completo com produtos de qualidade e tosa profissional para deixar seu pet sempre lindo e cheiroso.</p>
+                </article>
+                <article class="service-card">
+                    <div class="service-card__icon">
+                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=300&fit=crop" alt="Ícone de consulta veterinária" class="service-card__img" loading="lazy">
+                    </div>
+                    <h3 class="service-card__title">Consultas Veterinárias</h3>
+                    <p class="service-card__description">Atendimento veterinário completo com profissionais qualificados para cuidar da saúde do seu pet.</p>
+                </article>
+                <article class="service-card">
+                    <div class="service-card__icon">
+                        <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=300&h=300&fit=crop" alt="Ícone de vacinação" class="service-card__img" loading="lazy">
+                    </div>
+                    <h3 class="service-card__title">Vacinação</h3>
+                    <p class="service-card__description">Mantenha seu pet protegido com nosso serviço de vacinação completo e atualizado.</p>
+                </article>
+                <article class="service-card">
+                    <div class="service-card__icon">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop" alt="Ícone de pet shop" class="service-card__img" loading="lazy">
+                    </div>
+                    <h3 class="service-card__title">Pet Shop</h3>
+                    <p class="service-card__description">Produtos selecionados de alta qualidade: rações, brinquedos, acessórios e muito mais.</p>
+                </article>
+                <article class="service-card">
+                    <div class="service-card__icon">
+                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=300&fit=crop" alt="Ícone de hotel para pets" class="service-card__img" loading="lazy">
+                    </div>
+                    <h3 class="service-card__title">Hotel para Pets</h3>
+                    <p class="service-card__description">Seu pet pode ficar conosco enquanto você viaja. Ambiente seguro, confortável e com muito carinho.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção sobre a marca -->
+    <section id="sobre" class="about">
+        <div class="container">
+            <div class="about__content">
+                <div class="about__image">
+                    <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?w=800&h=600&fit=crop" alt="Equipe do Meu Caozinho Lindo cuidando de pets" class="about__img" loading="lazy">
+                </div>
+                <div class="about__text">
+                    <h2 class="section__title">Sobre o Meu Caozinho Lindo</h2>
+                    <p class="about__paragraph">
+                        Há mais de 10 anos no mercado, o Meu Caozinho Lindo nasceu do amor pelos animais e da paixão por proporcionar o melhor cuidado possível para nossos amigos de quatro patas.
+                    </p>
+                    <p class="about__paragraph">
+                        Nossa equipe é formada por profissionais qualificados e apaixonados pelo que fazem. Acreditamos que cada pet é único e merece atenção especial, por isso oferecemos serviços personalizados que respeitam as necessidades individuais de cada animal.
+                    </p>
+                    <p class="about__paragraph">
+                        Nossos valores são baseados em <strong>confiança</strong>, <strong>cuidado</strong> e <strong>carinho</strong>. Trabalhamos todos os dias para garantir que seu pet se sinta em casa e receba o melhor tratamento possível.
+                    </p>
+                    <div class="about__values">
+                        <div class="value-item">
+                            <h3 class="value-item__title">Missão</h3>
+                            <p class="value-item__text">Proporcionar cuidados excepcionais para pets, garantindo bem-estar, saúde e felicidade.</p>
+                        </div>
+                        <div class="value-item">
+                            <h3 class="value-item__title">Visão</h3>
+                            <p class="value-item__text">Ser referência em cuidado animal, reconhecida pela excelência e pelo amor aos pets.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de depoimentos -->
+    <section id="depoimentos" class="testimonials">
+        <div class="container">
+            <h2 class="section__title">O que Nossos Clientes Dizem</h2>
+            <p class="section__subtitle">A satisfação dos nossos clientes é nossa maior recompensa</p>
+            <div class="testimonials__grid">
+                <article class="testimonial-card">
+                    <div class="testimonial-card__quote">
+                        <img src="images/quote-icon.svg" alt="Aspas" class="testimonial-card__quote-icon">
+                    </div>
+                    <p class="testimonial-card__text">
+                        "Levo meu Golden Retriever, Max, há 2 anos no Meu Caozinho Lindo. A equipe é incrível, sempre muito atenciosa e cuidadosa. O Max adora ir lá! Recomendo de olhos fechados."
+                    </p>
+                    <div class="testimonial-card__author">
+                        <img src="https://i.pravatar.cc/150?img=47" alt="Foto de Maria Silva" class="testimonial-card__avatar" loading="lazy">
+                        <div class="testimonial-card__info">
+                            <h4 class="testimonial-card__name">Maria Silva</h4>
+                            <p class="testimonial-card__role">Tutora do Max</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="testimonial-card">
+                    <div class="testimonial-card__quote">
+                        <img src="images/quote-icon.svg" alt="Aspas" class="testimonial-card__quote-icon">
+                    </div>
+                    <p class="testimonial-card__text">
+                        "Excelente atendimento veterinário! Quando minha gata Luna ficou doente, foram muito profissionais e carinhosos. Hoje ela está saudável e feliz graças ao cuidado deles."
+                    </p>
+                    <div class="testimonial-card__author">
+                        <img src="https://i.pravatar.cc/150?img=12" alt="Foto de João Santos" class="testimonial-card__avatar" loading="lazy">
+                        <div class="testimonial-card__info">
+                            <h4 class="testimonial-card__name">João Santos</h4>
+                            <p class="testimonial-card__role">Tutor da Luna</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="testimonial-card">
+                    <div class="testimonial-card__quote">
+                        <img src="images/quote-icon.svg" alt="Aspas" class="testimonial-card__quote-icon">
+                    </div>
+                    <p class="testimonial-card__text">
+                        "O hotel para pets é perfeito! Deixo minha cachorrinha Bella sempre que viajo e sei que ela está em boas mãos. Ela sempre volta feliz e bem cuidada."
+                    </p>
+                    <div class="testimonial-card__author">
+                        <img src="https://i.pravatar.cc/150?img=32" alt="Foto de Ana Costa" class="testimonial-card__avatar" loading="lazy">
+                        <div class="testimonial-card__info">
+                            <h4 class="testimonial-card__name">Ana Costa</h4>
+                            <p class="testimonial-card__role">Tutora da Bella</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="testimonial-card">
+                    <div class="testimonial-card__quote">
+                        <img src="images/quote-icon.svg" alt="Aspas" class="testimonial-card__quote-icon">
+                    </div>
+                    <p class="testimonial-card__text">
+                        "Produtos de qualidade e preços justos. A equipe sempre me ajuda a escolher o melhor para meu pet. É o petshop de confiança da família!"
+                    </p>
+                    <div class="testimonial-card__author">
+                        <img src="https://i.pravatar.cc/150?img=15" alt="Foto de Carlos Oliveira" class="testimonial-card__avatar" loading="lazy">
+                        <div class="testimonial-card__info">
+                            <h4 class="testimonial-card__name">Carlos Oliveira</h4>
+                            <p class="testimonial-card__role">Tutor do Thor</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de contato/localização -->
+    <section id="contato" class="contact">
+        <div class="container">
+            <h2 class="section__title">Entre em Contato</h2>
+            <p class="section__subtitle">Estamos prontos para cuidar do seu pet com muito carinho</p>
+            <div class="contact__content">
+                <div class="contact__info">
+                    <div class="contact__item">
+                        <h3 class="contact__item-title">Endereço</h3>
+                        <p class="contact__item-text">Rua dos Animais, 123<br>Bairro Pet Friendly<br>São Paulo - SP, 01234-567</p>
+                    </div>
+                    <div class="contact__item">
+                        <h3 class="contact__item-title">Telefone</h3>
+                        <p class="contact__item-text">
+                            <a href="tel:+5511999999999" class="contact__link">(11) 99999-9999</a><br>
+                            <a href="tel:+5511888888888" class="contact__link">(11) 8888-8888</a>
+                        </p>
+                    </div>
+                    <div class="contact__item">
+                        <h3 class="contact__item-title">E-mail</h3>
+                        <p class="contact__item-text">
+                            <a href="mailto:contato@meucaozinholindo.com.br" class="contact__link">contato@meucaozinholindo.com.br</a>
+                        </p>
+                    </div>
+                    <div class="contact__item">
+                        <h3 class="contact__item-title">Horário de Funcionamento</h3>
+                        <p class="contact__item-text">
+                            Segunda a Sexta: 8h às 18h<br>
+                            Sábado: 8h às 14h<br>
+                            Domingo: Fechado
+                        </p>
+                    </div>
+                </div>
+                <div class="contact__map">
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&h=600&fit=crop" alt="Mapa mostrando localização do Meu Caozinho Lindo na Rua dos Animais, 123" class="contact__map-img" loading="lazy">
+                    <p class="contact__map-note">Localização: Rua dos Animais, 123 - Bairro Pet Friendly</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer com informações e links sociais -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__section">
+                    <h3 class="footer__title">Meu Caozinho Lindo</h3>
+                    <p class="footer__text">Cuidando do seu pet com amor e dedicação desde 2013.</p>
+                </div>
+                <div class="footer__section">
+                    <h3 class="footer__title">Links Rápidos</h3>
+                    <ul class="footer__links">
+                        <li><a href="#inicio" class="footer__link">Início</a></li>
+                        <li><a href="#servicos" class="footer__link">Serviços</a></li>
+                        <li><a href="#sobre" class="footer__link">Sobre</a></li>
+                        <li><a href="#depoimentos" class="footer__link">Depoimentos</a></li>
+                        <li><a href="#contato" class="footer__link">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="footer__section">
+                    <h3 class="footer__title">Redes Sociais</h3>
+                    <div class="footer__social">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="footer__social-link">
+                            <img src="images/facebook-icon.svg" alt="Ícone do Facebook" class="footer__social-icon">
+                        </a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="footer__social-link">
+                            <img src="images/instagram-icon.svg" alt="Ícone do Instagram" class="footer__social-icon">
+                        </a>
+                        <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="footer__social-link">
+                            <img src="images/whatsapp-icon.svg" alt="Ícone do WhatsApp" class="footer__social-icon">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p class="footer__copyright">&copy; 2024 Meu Caozinho Lindo. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript simples para menu mobile -->
+    <script>
+        // Menu mobile toggle
+        const navToggle = document.querySelector('.nav__toggle');
+        const navMenu = document.querySelector('.nav__menu');
+        
+        if (navToggle) {
+            navToggle.addEventListener('click', function() {
+                const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+                navToggle.setAttribute('aria-expanded', !isExpanded);
+                navMenu.classList.toggle('nav__menu--open');
+            });
+        }
+
+        // Fechar menu ao clicar em link
+        const navLinks = document.querySelectorAll('.nav__link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('nav__menu--open');
+                navToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    </script>
+</body>
+</html>
