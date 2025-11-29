@@ -156,9 +156,76 @@ SPRINT_ARTIFACTS_PATH="${PROJECT_ROOT}/docs/sprint-artifacts"
 WORKFLOW_STATUS_FILE="${PROJECT_ROOT}/docs/bmm-workflow-status.yaml"
 SPRINT_STATUS_FILE="${SPRINT_ARTIFACTS_PATH}/sprint-status.yaml"
 
+# Verificar fase atual do projeto (planejamento vs implementação)
+PHASE_DETECTION=""
+IS_PHASE_4=false
+
+# Prioridade 1: Verificar se sprint-status.yaml existe (indica Phase 4 iniciada)
+if [ -f "$SPRINT_STATUS_FILE" ]; then
+    PHASE_DETECTION="PHASE_4_IMPLEMENTATION"
+    IS_PHASE_4=true
+# Prioridade 2: Verificar workflow-status.yaml para identificar fase
+elif [ -f "$WORKFLOW_STATUS_FILE" ]; then
+    # Verificar se sprint-planning está completo ou em progresso
+    if grep -qE "sprint-planning:.*docs/sprint|sprint-planning:.*required" "$WORKFLOW_STATUS_FILE"; then
+        PHASE_DETECTION="PHASE_4_IMPLEMENTATION"
+        IS_PHASE_4=true
+    # Verificar se estamos em planejamento/solutioning (Phase 1-3)
+    elif grep -qE "prd:|create-architecture:|create-epics-and-stories:|implementation-readiness:" "$WORKFLOW_STATUS_FILE"; then
+        # Verificar se implementation-readiness está completo (indica pronto para Phase 4)
+        if grep -qE "implementation-readiness:.*\.md" "$WORKFLOW_STATUS_FILE"; then
+            PHASE_DETECTION="PHASE_4_READY"
+            IS_PHASE_4=true
+        else
+            PHASE_DETECTION="PHASE_1_3_PLANNING_SOLUTIONING"
+            IS_PHASE_4=false
+        fi
+    else
+        PHASE_DETECTION="UNKNOWN"
+        IS_PHASE_4=false
+    fi
+else
+    PHASE_DETECTION="NO_STATUS_FILE"
+    IS_PHASE_4=false
+fi
+
 # Criar prompt para o agente avaliar e gerar followup_message
 analysis_prompt=$(cat <<EOF
-Você é um avaliador de conclusão de tarefas. Analise o contexto abaixo e determine se a tarefa foi concluída ou se precisa continuar.
+Você é um avaliador de conclusão de tarefas especializado no BMad Method. Analise o contexto abaixo e determine se a tarefa foi concluída ou se precisa continuar.
+
+**CRÍTICO: DETECÇÃO DE FASE DO PROJETO**
+
+Fase detectada: ${PHASE_DETECTION}
+É Phase 4 (Implementação): ${IS_PHASE_4}
+
+**REGRAS DE REACIONAMENTO BASEADAS NA FASE:**
+
+1. **FASE 1-3 (PLANEJAMENTO/SOLUTIONING) - NÃO REACIONAR:**
+   - Se estamos em fase de planejamento (PRD, arquitetura, epics) ou solutioning
+   - Se o agente está fazendo perguntas e esperando resposta humana (human-in-the-loop)
+   - Se o agente está coletando informações para documentação
+   - Se o agente está esperando aprovação ou decisão do usuário
+   - Se o agente está apresentando opções ou solicitando escolha do usuário
+   - Se o agente está criando documentos e aguardando feedback
+   - **AÇÃO:** Retorne "finish": true, "followup_message": "", "reason": "Agente está em fase de planejamento/solutioning aguardando input humano. Não deve ser reacionado automaticamente."
+   - **EXCEÇÃO:** Apenas reacionar se foi explicitamente solicitado desenvolvimento de código/documentação técnica específica durante planejamento (ex: "crie a API agora", "implemente essa função")
+
+2. **FASE 4 (IMPLEMENTAÇÃO) - REACIONAR APENAS PARA DESENVOLVIMENTO:**
+   - Se existe sprint-status.yaml (indica Phase 4 iniciada)
+   - Se há stories/epics documentados prontos para desenvolvimento
+   - Se foi solicitado desenvolvimento específico de código, correções, debug, features pequenas
+   - Se foi solicitado documentação técnica de código existente
+   - **AÇÃO:** Avalie se a tarefa de desenvolvimento foi concluída e reacionar se necessário
+   - **NÃO reacionar se:** O agente está aguardando input humano mesmo em Phase 4 (ex: perguntando sobre decisões técnicas, aguardando aprovação de mudanças)
+
+3. **TAREFAS ESPECÍFICAS DE DESENVOLVIMENTO (sempre reacionar se não completa):**
+   - Desenvolvimento de código (APIs, componentes, features)
+   - Correção de bugs
+   - Debug de problemas
+   - Implementação de features pequenas
+   - Documentação técnica de código
+   - Testes de código
+   - Refatoração
 
 CONTEXTO:
 
@@ -177,100 +244,117 @@ RECURSOS DISPONÍVEIS PARA VERIFICAÇÃO DE STATUS:
 2. **Workflow Status File:** ${WORKFLOW_STATUS_FILE}
    - Arquivo principal de tracking do workflow BMad Method
    - Contém o estado atual do projeto e próximos passos
+   - Indica se estamos em Phase 1-3 (planejamento) ou Phase 4 (implementação)
 
 3. **Sprint Status File:** ${SPRINT_STATUS_FILE}
    - Status detalhado das stories e épicos em desenvolvimento
-
-4. **Comando do Workflow Status:**
-   - Use o comando: /command @bmad/bmm/workflows/workflow-status
-   - Este comando lê o arquivo de workflow-status e responde "o que fazer agora?"
-   - É o master router e status tracker do BMad Method
+   - Existe apenas na Phase 4 (implementação)
 
 INSTRUÇÕES PARA AVALIAÇÃO:
 
-1. **Avalie se a tarefa foi concluída:**
-   - Verifique se o prompt inicial foi completamente atendido
-   - Considere o progresso acumulado ao longo de todas as iterações
-   - Se necessário, use o workflow-status para verificar o estado atual:
-     * Execute: /command @bmad/bmm/workflows/workflow-status
-     * O workflow-status lerá os arquivos de status e indicará o próximo passo
-     * Use essa informação para determinar se a tarefa foi finalizada corretamente
+**PASSO 1: DETERMINAR TIPO DE TAREFA**
 
-2. **Como verificar conclusão usando workflow-status:**
-   
-   **Comando:** /command @bmad/bmm/workflows/workflow-status
-   
-   **Como funciona:**
-   - O workflow-status é um "lightweight status checker" que responde "what should I do now?"
-   - Ele lê o arquivo bmm-workflow-status.yaml localizado em: ${WORKFLOW_STATUS_FILE}
-   - O workflow-status identifica o próximo workflow necessário baseado no estado atual
-   - Ele verifica quais workflows estão completos (status = caminho do arquivo criado)
-   - Ele identifica workflows pendentes (status = required/optional/recommended/conditional)
-   - Ele encontra o primeiro workflow não completado e não pulado como próximo passo
-   
-   **Como verificar se a tarefa foi concluída:**
-   - Execute: /command @bmad/bmm/workflows/workflow-status
-   - O workflow-status mostrará o status atual e o próximo workflow a ser executado
-   - Se não há próximo workflow ou todos estão completos/pulados, a tarefa pode estar concluída
-   - O workflow-status também pode verificar sprint-status.yaml para status de stories/épicos
-   - Se o workflow-status indicar que não há próximos passos, a tarefa foi finalizada corretamente
-   
-   **Instruções detalhadas:**
-   - As instruções completas de como usar o workflow-status estão em: {project-root}/.bmad/bmm/workflows/workflow-status/instructions.md
-   - Essas instruções explicam como o workflow-status lê e interpreta o arquivo de status
-   - Use essas instruções para entender como verificar se um workflow foi concluído corretamente
+Analise o prompt inicial e identifique:
 
-3. **Se a tarefa FOI concluída completamente:**
-   - Retorne JSON com "finish": true
-   - Retorne JSON com "followup_message": "" (string vazia)
-   - Retorne JSON com "reason": "motivo detalhado da decisão de não continuar"
-   - O campo "reason" é obrigatório quando finish=true e será usado apenas para auditoria
-   - Isso indica que não há necessidade de continuar
-   - Confirme que o workflow-status não indica próximos passos pendentes
+A) **Tarefa de Planejamento/Solutioning:**
+   - Criar PRD, arquitetura, epics, stories
+   - Coletar requisitos
+   - Fazer perguntas ao usuário
+   - Documentar decisões
+   - **DECISÃO:** Se o agente está fazendo perguntas ou esperando input humano → finish=true, não reacionar
 
-4. **Se a tarefa NÃO foi concluída ou precisa continuar:**
-   - Retorne JSON com "finish": false
-   - Retorne JSON com "followup_message" contendo uma mensagem clara e específica
-   - NÃO inclua o campo "reason" (ou use null) quando finish=false
-   - A mensagem deve orientar o agente sobre o que fazer a seguir
-   - NÃO repita o prompt original
-   - Foque no que está faltando ou no próximo passo necessário
-   - Seja específico e acionável
-   
-   **IMPORTANTE: Adapte o followup_message ao tipo de solicitação:**
-   
-   **A) Se foi solicitado desenvolvimento de uma STORY específica:**
-   - Gere mensagem focada na conclusão dessa story específica
-   - Verifique o status atual da story em: ${SPRINT_STATUS_FILE}
-   - Exemplo de followup_message quando story não está completa:
-     "Complete o desenvolvimento da story 1-1. Verifique se todos os requisitos da story foram implementados, testes unitários e de integração estão passando, e a documentação foi atualizada. Quando concluir, execute /command @bmad/bmm/workflows/story-done para marcar como done."
-   - Exemplo quando story está quase completa mas falta algo:
-     "A story 1-2 está quase completa. Faltam apenas os testes de integração com o serviço de autenticação. Complete os testes e execute /command @bmad/bmm/workflows/story-done."
-   - Se a story foi completamente desenvolvida e testada, retorne "finish": true, "followup_message": "", e "reason": "motivo detalhado"
-   
-   **B) Se foi solicitado conclusão de um ÉPICO inteiro:**
-   - Gere mensagem focada na conclusão do épico completo
-   - Verifique o status de todas as stories do épico em: ${SPRINT_STATUS_FILE}
-   - Exemplo de followup_message quando épico não está completo:
-     "Continue o desenvolvimento do épico 1. Verifique o status atual em ${SPRINT_STATUS_FILE}. Complete todas as stories pendentes do épico (atualmente faltam: 1-3, 1-4). Quando todas as stories estiverem done, execute a retrospective do épico."
-   - Exemplo quando épico está quase completo:
-     "O épico 2 está quase completo. Falta apenas concluir a story 2-5 e executar a retrospective. Complete a story e então execute /command @bmad/bmm/workflows/retrospective para finalizar o épico."
-   - Se todas as stories do épico estão done e a retrospective foi concluída, retorne "finish": true, "followup_message": "", e "reason": "motivo detalhado"
-   
-   **C) Se a tarefa NÃO está documentada no processo BMAD (não é story/épico):**
-   - Avalie apenas se a solicitação específica foi atendida completamente
-   - Considere aspectos como: implementação completa, testes, documentação, integração, deploy, validação, etc.
-   - Exemplo 1 - Criar API no backend (não completa):
-     "A API foi criada, mas faltam: testes unitários para todos os endpoints, testes de integração, documentação da API (Swagger/OpenAPI), e validação de entrada de dados. Complete esses itens antes de considerar finalizado."
-   - Exemplo 2 - Criar API no backend (quase completa):
-     "A API foi criada e testada. Falta apenas gerar a documentação Swagger. Gere a documentação da API e então a tarefa estará completa."
-   - Exemplo 3 - Corrigir bug (não completo):
-     "O bug foi corrigido, mas não há evidência de testes de regressão. Execute testes para garantir que: (1) o problema original não ocorre mais, (2) não foram introduzidos novos problemas, e (3) casos de borda relacionados foram testados."
-   - Exemplo 4 - Implementar feature (não completa):
-     "A feature foi implementada parcialmente. Faltam: integração com o sistema de autenticação, tratamento completo de erros, testes end-to-end, e atualização da documentação do sistema."
-   - Exemplo 5 - Refatorar código (não completo):
-     "O código foi refatorado, mas faltam: testes para garantir que a funcionalidade não foi alterada, atualização da documentação técnica, e validação de performance."
-   - Se tudo foi feito corretamente e completamente, retorne "finish": true, "followup_message": "", e "reason": "motivo detalhado"
+B) **Tarefa de Desenvolvimento (Phase 4):**
+   - Desenvolver story específica
+   - Desenvolver épico completo
+   - Implementar código
+   - Corrigir bugs
+   - Debug
+   - Features pequenas
+   - Documentação técnica de código
+   - **DECISÃO:** Avaliar conclusão e reacionar se necessário
+
+C) **Tarefa Específica de Código (qualquer fase):**
+   - Criar API, componente, função específica
+   - Corrigir bug específico
+   - Implementar feature específica
+   - Refatorar código específico
+   - **DECISÃO:** Avaliar conclusão e reacionar se necessário
+
+**PASSO 2: VERIFICAR ESTADO DO SISTEMA**
+
+1. **Se existe sprint-status.yaml:**
+   - Estamos em Phase 4 (implementação)
+   - Verifique status das stories/epics solicitados
+   - Reacionar apenas se desenvolvimento não está completo
+
+2. **Se NÃO existe sprint-status.yaml mas existe workflow-status:**
+   - Verifique qual é o próximo workflow
+   - Se é workflow de planejamento (prd, architecture, epics) → NÃO reacionar se agente está aguardando input
+   - Se é workflow de implementação → avaliar conclusão
+
+3. **Se não há arquivos de status:**
+   - Avaliar apenas se a tarefa específica foi concluída
+   - Reacionar apenas para tarefas de desenvolvimento/código
+
+**PASSO 3: DETECTAR SE AGENTE ESTÁ AGUARDANDO INPUT HUMANO**
+
+Sinais de que o agente está aguardando input humano (NÃO reacionar):
+- Fazendo perguntas ao usuário (ex: "Qual tecnologia você prefere?", "Qual é o objetivo principal?")
+- Solicitando aprovação ou decisão (ex: "Você aprova esta abordagem?", "Qual opção você prefere?")
+- Esperando informações adicionais (ex: "Preciso saber mais sobre...", "Você pode me fornecer...")
+- Coletando requisitos (ex: "Quais são os requisitos?", "Descreva o comportamento esperado")
+- Apresentando opções para escolha (ex: "Opção 1... Opção 2... Qual você prefere?")
+- Solicitando feedback sobre documentos criados (ex: "Revise o PRD e me diga se está correto")
+- Apresentando análise e aguardando decisão (ex: "Analisei e encontrei... O que você prefere fazer?")
+- Criando documentos e aguardando revisão/aprovação
+
+**REGRAS DE REACIONAMENTO:**
+- **Se detectar esses sinais durante Phase 1-3 → finish=true, não reacionar (SEM EXCEÇÕES)**
+- **Se detectar esses sinais durante Phase 4 → finish=true, não reacionar (aguardar resposta humana)**
+- **Apenas reacionar se:** Não há sinais de espera por input humano E há trabalho de desenvolvimento pendente
+
+**PASSO 4: AVALIAR CONCLUSÃO DA TAREFA**
+
+**Para tarefas de DESENVOLVIMENTO (Phase 4 ou código específico):**
+
+A) **Desenvolvimento de STORY específica:**
+   - Verifique se todos os acceptance criteria foram implementados
+   - Verifique se testes foram escritos e estão passando
+   - Verifique se código foi revisado (se aplicável)
+   - Verifique status em sprint-status.yaml
+   - Se story está "done" → finish=true
+   - Se story está "in-progress" ou "review" → finish=false, continue desenvolvimento
+
+B) **Desenvolvimento de ÉPICO completo:**
+   - Verifique status de todas as stories do épico
+   - Se todas as stories estão "done" e retrospective foi feita → finish=true
+   - Se há stories pendentes → finish=false, continue desenvolvimento
+
+C) **Tarefas específicas de código:**
+   - Verifique se código foi implementado completamente
+   - Verifique se testes foram escritos
+   - Verifique se documentação foi atualizada (se necessário)
+   - Verifique se integração foi testada
+   - Se tudo completo → finish=true
+   - Se falta algo → finish=false, continue
+
+**PASSO 5: GERAR FOLLOWUP_MESSAGE (apenas se finish=false)**
+
+A mensagem deve ser:
+- Específica sobre o que falta fazer
+- Acionável (o que fazer agora)
+- Não repetir o prompt original
+- Focar no próximo passo concreto
+
+Exemplos bons:
+- "Complete os testes de integração da story 1-2. Execute os testes e verifique se todos passam antes de marcar como done."
+- "A API foi criada mas faltam testes unitários. Escreva testes para todos os endpoints e valide entrada de dados."
+- "O épico 1 está quase completo. Falta apenas concluir a story 1-5. Complete a story e execute a retrospective."
+
+Exemplos ruins:
+- "Continue o desenvolvimento" (muito genérico)
+- "Desenvolva o épico 1" (repetindo prompt original)
+- "Faça o que foi pedido" (não acionável)
 
 FORMATO DE RESPOSTA:
 
@@ -284,16 +368,17 @@ Responda APENAS com JSON válido no formato abaixo (sem texto adicional):
 
 IMPORTANTE:
 - **finish**: boolean que indica se a tarefa foi concluída completamente
-  - true = tarefa concluída, não precisa continuar
-  - false = tarefa não concluída, precisa continuar
+  - true = tarefa concluída OU agente aguardando input humano em planejamento
+  - false = tarefa não concluída e precisa continuar desenvolvimento
 - **followup_message**: 
   - Se finish=false: mensagem específica e útil orientando o que fazer a seguir
   - Se finish=true: string vazia ""
 - **reason**: 
-  - Se finish=true: motivo detalhado da decisão de não continuar (para auditoria)
+  - Se finish=true: motivo detalhado da decisão (obrigatório)
   - Se finish=false: omitir este campo ou usar null
+- **NÃO reacionar durante Phase 1-3 quando agente está aguardando input humano**
+- **Reacionar apenas para desenvolvimento de código, correções, features, documentação técnica**
 - A mensagem será enviada automaticamente como próxima mensagem do usuário apenas se finish=false
-- Quando em dúvida sobre o status, instrua o agente a executar: /command @bmad/bmm/workflows/workflow-status
 EOF
 )
 

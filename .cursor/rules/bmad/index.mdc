@@ -68,6 +68,7 @@ BMAD rules have been installed to: `.cursor/rules/bmad/`
 - @bmad/bmm/agents/tea - tea
 - @bmad/bmm/agents/tech-writer - tech-writer
 - @bmad/bmm/agents/ux-designer - ux-designer
+- @bmad/bmm/agents/phase4-orchestrator - phase4-orchestrator (Fase 4 - Orquestrador de Implementação)
 
 **Workflows:**
 - @bmad/bmm/workflows/brainstorm-project - brainstorm-project
