@@ -14,7 +14,9 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Diretórios do projeto
-PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+# Calcular PROJECT_ROOT: subir de .cursor/scripts/ para a raiz do projeto
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BMAD_CONFIG="${PROJECT_ROOT}/.bmad/bmm/config.yaml"
 WORKFLOW_FILE="${PROJECT_ROOT}/.bmad/bmm/workflows/4-implementation/story-done/workflow.yaml"
 WORKFLOW_INSTRUCTIONS="${PROJECT_ROOT}/.bmad/bmm/workflows/4-implementation/story-done/instructions.md"

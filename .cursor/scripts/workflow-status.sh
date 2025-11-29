@@ -10,10 +10,13 @@ set -e
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Diretórios do projeto
-PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+# Calcular PROJECT_ROOT: subir de .cursor/scripts/ para a raiz do projeto
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BMAD_CONFIG="${PROJECT_ROOT}/.bmad/bmm/config.yaml"
 WORKFLOW_FILE="${PROJECT_ROOT}/.bmad/bmm/workflows/workflow-status/workflow.yaml"
 WORKFLOW_INSTRUCTIONS="${PROJECT_ROOT}/.bmad/bmm/workflows/workflow-status/instructions.md"

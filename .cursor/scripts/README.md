@@ -16,7 +16,8 @@ sandbox/
 │   │   ├── query-context.sh          # Consulta contexto de uma generation
 │   │   ├── query-conversation-history.sh # Histórico completo de conversa
 │   │   ├── query-examples.sh         # Exemplos de consultas SQL
-│   │   └── verify-collection.sh      # Verifica coleta de dados
+│   │   ├── verify-collection.sh      # Verifica coleta de dados
+│   │   └── check-cloud-agents-env.sh  # Verifica configuração de ambiente
 │   ├── database/
 │   │   ├── cursor_hooks.db           # Banco de dados SQLite
 │   │   └── database-schema.sql       # Schema do banco
@@ -24,6 +25,7 @@ sandbox/
 │   │   ├── DATABASE.md               # Documentação do banco de dados
 │   │   ├── TASK-COMPLETION-CHECKER.md # Documentação do checker
 │   │   ├── CURSOR-API-KEY-CONFIG.md  # Configuração da API key
+│   │   ├── CLOUD-AGENTS-ENV.md       # Configuração de ambiente Cloud Agents
 │   │   └── TROUBLESHOOTING.md        # Guia de troubleshooting
 │   ├── hooks.json                    # Configuração dos hooks
 │   ├── session.json                  # Log linear de eventos
@@ -152,6 +154,13 @@ bash .cursor/scripts/query-context.sh <generation_id>
 bash .cursor/scripts/verify-collection.sh
 ```
 
+### Verificar Configuração de Ambiente do Cloud Agents
+
+```bash
+# Verificar variáveis de ambiente e configuração
+bash .cursor/scripts/check-cloud-agents-env.sh
+```
+
 ### Ver Logs
 
 ```bash
@@ -167,6 +176,7 @@ tail -50 ~/.cursor/hooks-debug.log | grep ERRO
 - **`.cursor/docs/DATABASE.md`** - Estrutura do banco de dados e consultas
 - **`.cursor/docs/TASK-COMPLETION-CHECKER.md`** - Funcionamento do checker
 - **`.cursor/docs/CURSOR-API-KEY-CONFIG.md`** - Configuração da API key
+- **`.cursor/docs/CLOUD-AGENTS-ENV.md`** - Configuração de ambiente Cloud Agents
 - **`.cursor/docs/TROUBLESHOOTING.md`** - Guia de solução de problemas
 - **`docs/cursor-hooks.md`** - Documentação oficial dos hooks do Cursor
 
