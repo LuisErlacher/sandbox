@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      { "command": "bash .cursor/hooks/session-collector.sh" }
+    ],
+    "afterAgentResponse": [
+      { "command": "bash .cursor/hooks/session-collector.sh" }
+    ],
+    "afterShellExecution": [
+      { "command": "bash .cursor/hooks/session-collector.sh" }
+    ],
+    "afterMCPExecution": [
+      { "command": "bash .cursor/hooks/session-collector.sh" }
+    ],
+    "afterFileEdit": [
+      { "command": "bash .cursor/hooks/session-collector.sh" }
+    ],
+    "stop": [
+      { "command": "bash .cursor/hooks/session-collector.sh" },
+      { "command": "bash .cursor/hooks/task-completion-checker.sh" },
+      { "command": "bash .cursor/hooks/workflow-controller.sh" }
+    ]
+  }
+}
+
+
