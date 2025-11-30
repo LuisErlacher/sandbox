@@ -77,19 +77,58 @@ echo -e "${BLUE}Marcando Story como Ready${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
-# Verificar se cursor-agent está instalado
-if ! command -v cursor-agent &> /dev/null; then
+# Função para verificar e instalar cursor-agent
+check_and_install_cursor_agent() {
+    if command -v cursor-agent &> /dev/null; then
+        echo -e "${GREEN}✓ cursor-agent encontrado${NC}"
+        cursor-agent --version 2>&1 | head -1
+        return 0
+    fi
+    
     echo -e "${YELLOW}⚠️  cursor-agent não encontrado no PATH${NC}"
     echo "Instalando cursor-agent..."
-    curl https://cursor.com/install -fsS | bash
-    if [ $? -ne 0 ]; then
+    
+    # Instalar cursor-agent
+    if ! curl https://cursor.com/install -fsS | bash; then
         echo -e "${RED}Erro ao instalar cursor-agent. Verifique sua conexão com a internet.${NC}"
         exit 1
     fi
-fi
+    
+    # Recarregar PATH para incluir novos binários
+    export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+    
+    # Verificar novamente após instalação
+    if command -v cursor-agent &> /dev/null; then
+        echo -e "${GREEN}✓ cursor-agent instalado e encontrado${NC}"
+        cursor-agent --version 2>&1 | head -1
+        return 0
+    fi
+    
+    # Tentar encontrar em locais comuns
+    local possible_paths=(
+        "$HOME/.local/bin/cursor-agent"
+        "$HOME/.cargo/bin/cursor-agent"
+        "/usr/local/bin/cursor-agent"
+        "/usr/bin/cursor-agent"
+    )
+    
+    for path in "${possible_paths[@]}"; do
+        if [ -f "$path" ] && [ -x "$path" ]; then
+            echo -e "${GREEN}✓ cursor-agent encontrado em: $path${NC}"
+            "$path" --version 2>&1 | head -1
+            export PATH="$(dirname "$path"):$PATH"
+            return 0
+        fi
+    done
+    
+    echo -e "${RED}Erro: cursor-agent não pôde ser encontrado após instalação${NC}"
+    echo "Por favor, execute manualmente: curl https://cursor.com/install -fsS | bash"
+    echo "E adicione o diretório de instalação ao seu PATH"
+    exit 1
+}
 
-echo -e "${GREEN}✓ cursor-agent encontrado${NC}"
-cursor-agent --version 2>&1 | head -1
+# Verificar e instalar cursor-agent se necessário
+check_and_install_cursor_agent
 
 # Encontrar arquivo de story
 STORY_FILE=$(find_story_file "$STORY_INPUT")
